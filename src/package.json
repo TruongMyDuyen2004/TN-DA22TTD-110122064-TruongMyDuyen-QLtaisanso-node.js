@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "cd KLTN_QLTSS && node backend/server.js",
+    "dev": "cd KLTN_QLTSS && nodemon backend/server.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}

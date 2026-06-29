@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống quản lý tài sản số - Tra Vinh University</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .flowchart {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .role-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .role-header {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .role-header.guest {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .role-header.user {
+            background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+        }
+
+        .role-header.admin {
+            background: linear-gradient(135deg, #45aaf2 0%, #2d98da 100%);
+        }
+
+        .role-header.superadmin {
+            background: linear-gradient(135deg, #fd9644 0%, #fa8231 100%);
+        }
+
+        .node {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            border-left: 4px solid #ddd;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .node.action {
+            border-left-color: #45aaf2;
+            background: #f8f9fa;
+        }
+
+        .node.dashboard {
+            border-left-color: #26de81;
+            background: #e8f5e9;
+            font-weight: 600;
+        }
+
+        .node.primary {
+            border-left-color: #fa8231;
+            background: #fff3e0;
+        }
+
+        .node.report {
+            border-left-color: #a55eea;
+            background: #f3e5f5;
+        }
+
+        .arrow-down {
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+            padding: 5px 0;
+        }
+
+        .conector {
+            width: 2px;
+            height: 15px;
+            background: #ccc;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .flowchart {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .flowchart {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Thiết kế và xây dựng hệ thống quản lý tài sản số<br>cho Đại học Trà Vinh</h1>
+        </div>
+
+        <div class="flowchart">
+            <!-- Guest Column -->
+            <div class="role-column">
+                <div class="role-header guest">
+                    Khách (Guest)
+                </div>
+                <div class="node primary">Quét mã QR trên thiết bị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Tra cứu thông tin<br>thiết bị công khai</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Xác nhận thông tin<br>kiểm kê</div>
+            </div>
+
+            <!-- User Column -->
+            <div class="role-column">
+                <div class="role-header user">
+                    Người dùng (User)
+                </div>
+                <div class="node primary">Đăng nhập hệ thống</div>
+                <div class="arrow-down">↓</div>
+                <div class="node dashboard">Dashboard<br>Tổng quan</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Xem danh sách thiết bị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Xem chi tiết thiết bị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Gửi báo cáo hỏng</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Theo dõi tiến độ xử lý</div>
+            </div>
+
+            <!-- Admin Column -->
+            <div class="role-column">
+                <div class="role-header admin">
+                    Quản trị viên (Admin)
+                </div>
+                <div class="node primary">Đăng nhập quản trị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node dashboard">Dashboard quản trị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node primary">Quản lý thiết bị<br>Thêm/Sửa/Xóa/Import/In QR</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Quản lý bảo trì<br>Lập/Phân công/Ghi nhận</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Quản lý sự cố<br>Báo cáo/Xử lý/Đóng</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Điều chuyển tài sản<br>Yêu cầu/Phê duyệt/Cập nhật</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Thanh lý tài sản<br>Đề xuất/Phê duyệt/Cập nhật</div>
+                <div class="arrow-down">↓</div>
+                <div class="node report">Báo cáo thống kê<br>Xem biểu đồ/Xuất Excel/PDF</div>
+            </div>
+
+            <!-- SuperAdmin Column -->
+            <div class="role-column">
+                <div class="role-header superadmin">
+                    Quản trị hệ thống (SuperAdmin)
+                </div>
+                <div class="node primary">Đăng nhập quản trị hệ thống</div>
+                <div class="arrow-down">↓</div>
+                <div class="node dashboard">Dashboard hệ thống</div>
+                <div class="arrow-down">↓</div>
+                <div class="node primary">Quản lý thiết bị</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Quản lý bảo trì</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Điều chuyển & Thanh lý</div>
+                <div class="arrow-down">↓</div>
+                <div class="node report">Báo cáo thống kê</div>
+                <div class="arrow-down">↓</div>
+                <div class="node primary">Quản lý người dùng<br>Thêm/Phân quyền/Khóa</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Quản lý phòng ban<br>Thêm/Sửa cơ cấu tổ chức</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Xem nhật ký hoạt động<br>Audit log</div>
+                <div class="arrow-down">↓</div>
+                <div class="node action">Cấu hình hệ thống<br>Tham số/Cảnh báo/Bảo mật</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

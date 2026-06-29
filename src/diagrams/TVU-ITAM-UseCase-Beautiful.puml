@@ -1,0 +1,116 @@
+@startuml TVU-ITAM-UseCase-Beautiful
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+skinparam rectangle {
+  BackgroundColor #F0F4FF
+  BorderColor #2B579A
+  RoundCorner 8
+  FontSize 11
+  FontName Arial
+  BorderThickness 1.5
+}
+
+skinparam arrow {
+  Color #2B579A
+  Thickness 1.8
+}
+
+skinparam package {
+  BackgroundColor #E8EEF7
+  BorderColor #2B579A
+  RoundCorner 10
+  FontSize 13
+  FontStyle bold
+  FontName Arial
+}
+
+title Thiết kế và xây dựng hệ thống quản lý tài sản số\ncho Đại học Trà Vinh
+
+package "👤 Khách (Guest)" as GuestPkg {
+  rectangle "📱 Quét mã QR\nthiết bị" as G1
+  rectangle "🔍 Tra cứu thông tin\ncông khai" as G2
+}
+note bottom of G1
+  Không cần đăng nhập
+end note
+
+package "👤 Người dùng (User)" as UserPkg {
+  rectangle "🔑 Đăng nhập" as U1
+  rectangle "📊 Xem Dashboard\nTổng quan" as U2
+  rectangle "📋 Xem danh sách\nthiết bị" as U3
+  rectangle "📄 Chi tiết\nthiết bị" as U4
+  rectangle "⚠️ Gửi báo cáo\nhỏng hóc" as U5
+  rectangle "🔔 Theo dõi tiến độ\nxử lý sự cố" as U6
+}
+
+package "👤 Quản trị viên (Admin)" as AdminPkg {
+  rectangle "🔑 Đăng nhập" as A0
+  rectangle "📊 Dashboard\nquản trị" as A1
+  rectangle "🖥️ Quản lý thiết bị\nThêm/Xóa/Sửa/Xem" as A2
+  rectangle "📤 Import/Export\n(In Excel, QR, PDF)" as A3
+  rectangle "🔧 Quản lý bảo trì\nLập phiếu/Phân công" as A4
+  rectangle "🚨 Xử lý sự cố\nBáo cáo/Phân công/Đóng" as A5
+  rectangle "📁 Điều chuyển\ntài sản" as A6
+  rectangle "🏭 Thanh lý\ntài sản" as A7
+  rectangle "📈 Báo cáo\nthống kê" as A8
+}
+
+package "👤 Quản trị hệ thống (SuperAdmin)" as SAPkg {
+  rectangle "🔑 Đăng nhập" as S0
+  rectangle "📊 Dashboard\nhệ thống" as S1
+  rectangle "👥 Quản lý\nngười dùng" as S2
+  rectangle "🏢 Quản lý\nphòng ban" as S3
+  rectangle "🔍 Xem nhật ký\nhoạt động" as S4
+  rectangle "⚙️ Cấu hình\nhệ thống" as S5
+  rectangle "📋 Toàn bộ\nquyền quản trị" as S6
+}
+
+' ============ FLOWS ============
+
+' Guest
+G1 --> G2 : tra cứu công khai
+
+' User flow
+U1 --> U2
+U2 --> U3
+U3 --> U4
+U4 --> U5 : báo hỏng
+U5 --> U6 : theo dõi
+
+' Admin flow (includes User permissions + more)
+A0 --> A1
+A1 --> A2
+A2 --> A3 : xuất báo cáo
+A3 --> A4
+A4 --> A5
+A5 --> A6
+A6 --> A7
+A7 --> A8
+
+' SuperAdmin flow (includes Admin permissions + system mgmt)
+S0 --> S1
+S1 --> S6 : thiết bị, bảo trì, sự cố,...
+S6 --> S2
+S2 --> S3
+S3 --> S4
+S4 --> S5
+
+' ============ FOOTER NOTE ============
+note bottom of AdminPkg
+  **Admin** có đầy đủ quyền của User
+  + quản lý thiết bị, bảo trì, sự cố,
+  + điều chuyển, thanh lý, báo cáo
+  **4 vai trò**: SuperAdmin > Admin > User > Guest
+end note
+
+note bottom of SAPkg
+  **SuperAdmin**: Toàn quyền hệ thống
+  **Không giới hạn phòng ban**
+end note
+
+@enduml

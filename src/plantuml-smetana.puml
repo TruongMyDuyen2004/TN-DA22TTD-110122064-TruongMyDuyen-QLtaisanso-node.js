@@ -1,0 +1,75 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam defaultTextAlignment center
+skinparam actorStyle awesome
+left to right direction
+
+:Super Admin: as SA
+:User: as US
+:Khách: as KH
+
+rectangle "Hệ thống quản lý tài sản số" {
+  (Đăng nhập) as UC1
+  (Quản lý thiết bị) as UC2
+  (Quản lý bảo trì) as UC3
+  (Điều chuyển) as UC4
+  (Thanh lý) as UC5
+  (Báo hỏng) as UC6
+  (Xử lý sự cố) as UC7
+  (Báo cáo thống kê) as UC8
+  (Quản lý người dùng) as UC9
+  (Quản lý phòng ban) as UC10
+  (In mã QR) as UC11
+  (Import / Export) as UC12
+  (Xem nhật ký HĐ) as UC13
+  (Cấu hình hệ thống) as UC14
+  (Dashboard) as UC15
+  (Tra cứu qua QR) as UC16
+}
+
+:Admin: as AD
+
+UC3 ..> UC2 : <<include>>
+UC4 ..> UC2 : <<include>>
+UC5 ..> UC2 : <<include>>
+UC6 ..> UC2 : <<include>>
+UC7 ..> UC2 : <<include>>
+UC8 ..> UC2 : <<include>>
+UC11 ..> UC2 : <<include>>
+UC12 ..> UC2 : <<include>>
+
+SA --> UC9
+SA --> UC10
+SA --> UC13
+SA --> UC14
+SA --> UC12
+SA --> UC11
+SA --> UC8
+SA --> UC7
+SA --> UC3
+SA --> UC4
+SA --> UC5
+SA --> UC15
+SA --> UC1
+SA --> UC2
+
+AD --> UC12
+AD --> UC11
+AD --> UC8
+AD --> UC7
+AD --> UC3
+AD --> UC4
+AD --> UC5
+AD --> UC15
+AD --> UC1
+AD --> UC2
+AD --> UC6
+
+US --> UC1
+US --> UC2
+US --> UC6
+
+KH --> UC16
+
+@enduml

@@ -1,0 +1,141 @@
+@startuml TVU-ITAM-Frontend
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+
+title TVU-ITAM - Cấu trúc Frontend\nSPA bằng Vanilla JS (no framework) - 17 pages
+
+package "Browser" as Browser {
+    
+    package "Static Files\n(frontend/)" as Static {
+        [index.html\n(Main SPA Shell)] as app
+        [app.html\n(Admin Shell)] as app_admin
+        [public-device.html\n(Public / QR View)] as pub
+        [reset-password.html\n(Password Reset)] as reset
+        [test-qr.html\n(QR Testing)] as qr_test
+        [service-worker.js\n(PWA Offline)] as sw
+        [manifest.json\n(PWA Config)] as manifest
+    }
+    
+    package "JavaScript Modules\n(assets/js/)]" as JS {
+        [api.js\n(Axios Client)] as api
+        [app.js\n(Router + Core)] as router
+        [login.js\n(Auth Handler)] as login
+        [loginHistory.js] as lh
+        [devices.js] as dev
+        [maintenance.js] as maint
+        [incidents.js] as inc
+        [transfers.js] as tr
+        [disposals.js] as disp
+        [notifications.js] as notif
+        [users.js] as usr
+        [departments.js] as dept
+        [categories.js] as cat
+        [logs.js] as log
+        [reports.js] as rep
+        [depreciation.js] as depr
+        [inventory.js] as inv
+        [warehouse.js] as wh
+        [settings.js] as set
+        [public-device.js] as pubjs
+        [reset-password.js] as resetjs
+    }
+    
+    package "CSS\n(assets/)]" as CSS {
+        [main.css\n(App Styles)] as main_css
+        [app.css\n(Component Styles)] as app_css
+        [login.css\n(Auth Pages)] as login_css
+        [public-device.css] as pub_css
+    }
+    
+    package "Assets" as Assets {
+        [logo-tvu.png] as logo
+        [images/] as imgs
+    }
+}
+
+package "App Router\n(app.js - 17 Pages)" as Router {
+    [dashboard\n(Tổng quan)] as r_dash
+    [devices\n(Quản lý thiết bị)] as r_dev
+    [maintenance\n(Lịch bảo trì)] as r_maint
+    [incidents\n(Báo cáo sự cố)] as r_inc
+    [transfers\n(Điều chuyển tài sản)] as r_tr
+    [disposals\n(Thanh lý)] as r_disp
+    [notifications\n(Thông báo)] as r_notif
+    [users\n(Quản lý người dùng)] as r_usr
+    [loginHistory\n(Lịch sử đăng nhập)] as r_lh
+    [settings\n(Cài đặt)] as r_set
+    [departments\n(Phòng ban)] as r_dept
+    [categories\n(Loại thiết bị)] as r_cat
+    [logs\n(Nhật ký hệ thống)] as r_log
+    [reports\n(Thống kê & Báo cáo)] as r_rep
+    [depreciation\n(Khấu hao)] as r_depr
+    [inventory\n(Kiểm kê tài sản)] as r_inv
+    [warehouse\n(Quản lý kho)] as r_wh
+}
+
+package "User Roles\n(4 levels, auth.js)]" as Roles {
+    [superadmin\n(Full Access)] as r_sa
+    [admin\n(Department Scope)] as r_ad
+    [user\n(Read-only + Incidents)] as r_u
+    [guest\n(Public QR View)] as r_g
+}
+
+package "Backend API\n(port 5000)]" as API {
+    [Express.js] as express
+    [REST API\n(/api/*)] as rest
+    [SSE Stream\n(/api/notifications/stream)] as sse
+}
+
+' Connections
+app --> Router : loads modules
+app_admin --> Router : loads modules
+pub --> pubjs : loads
+reset --> resetjs : loads
+
+Router --> app_css : applies styles
+Router --> main_css : applies styles
+Router --> logo : displays
+
+JS --> api : axios instance
+api --> rest : fetch/sse
+api --> sse : EventSource (real-time)
+
+Roles --> Router : permission check
+Routes --> Roles : requireRole()
+
+Router --> r_dash : navigate
+Router --> r_dev : navigate
+Router --> r_maint : navigate
+Router --> r_inc : navigate
+Router --> r_tr : navigate
+Router --> r_disp : navigate
+Router --> r_notif : navigate
+Router --> r_usr : navigate
+Router --> r_lh : navigate
+Router --> r_set : navigate
+Router --> r_dept : navigate
+Router --> r_cat : navigate
+Router --> r_log : navigate
+Router --> r_rep : navigate
+Router --> r_depr : navigate
+Router --> r_inv : navigate
+Router --> r_wh : navigate
+
+note bottom of Router
+  Vanilla JS SPA (no React/Vue)
+  Uses hash-based or fetch-based routing
+  Page skeleton loader + fade-in animation
+  Responsive sidebar + topbar layout
+end note
+
+note bottom of roles
+  superadmin: all 17 pages
+  admin: 15 pages (no users/logs/settings)
+  user: 5 pages (dashboard, devices, 
+         maintenance, incidents, notifications)
+  guest: QR lookup only
+end note
+
+@enduml

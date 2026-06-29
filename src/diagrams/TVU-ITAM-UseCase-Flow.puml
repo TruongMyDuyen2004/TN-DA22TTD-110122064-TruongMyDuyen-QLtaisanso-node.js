@@ -1,0 +1,91 @@
+@startuml TVU-ITAM-UseCase-Flow
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam rectangle {
+  BackgroundColor #E8E8E8
+  BorderColor #999999
+  RoundCorner 10
+  FontSize 11
+}
+skinparam package {
+  BackgroundColor #F0F0F0
+  BorderColor #666666
+  RoundCorner 5
+  FontSize 12
+  FontStyle bold
+}
+
+title Thiết kế và xây dựng hệ thống quản lý tài sản số\ncho Đại học Trà Vinh
+
+package "👤 Khách\n(Guest)" as Guest {
+  rectangle "Quét mã QR trên thiết bị" as G1
+  rectangle "Tra cứu thông tin\nthiết bị công khai" as G2
+  rectangle "Xác nhận thông tin\nkiểm kê" as G3
+}
+
+package "👤 Người dùng\n(User)" as User {
+  rectangle "Đăng nhập hệ thống" as U1
+  rectangle "Dashboard\nTổng quan" as U2
+  rectangle "Xem danh sách thiết bị" as U3
+  rectangle "Xem chi tiết thiết bị" as U4
+  rectangle "Gửi báo cáo hỏng" as U5
+  rectangle "Theo dõi tiến độ xử lý" as U6
+}
+
+package "👤 Quản trị viên\n(Admin)" as Admin {
+  rectangle "Đăng nhập quản trị" as A1
+  rectangle "Dashboard quản trị" as A2
+  rectangle "Quản lý thiết bị\nThêm/Sửa/Xóa/Import/Export/In QR" as A3
+  rectangle "Quản lý bảo trì\nLập/Phân công/Ghi nhận" as A4
+  rectangle "Quản lý sự cố\nBáo cáo/Xử lý/Đóng" as A5
+  rectangle "Điều chuyển tài sản\nYêu cầu/Phê duyệt/Cập nhật" as A6
+  rectangle "Thanh lý tài sản\nĐề xuất/Phê duyệt/Cập nhật" as A7
+  rectangle "Báo cáo thống kê\nXem biểu đồ/Xuất Excel/PDF" as A8
+}
+
+package "👤 Quản trị hệ thống\n(SuperAdmin)" as SA {
+  rectangle "Đăng nhập quản trị hệ thống" as S1
+  rectangle "Dashboard hệ thống" as S2
+  rectangle "Quản lý thiết bị" as S3
+  rectangle "Quản lý bảo trì" as S4
+  rectangle "Điều chuyển & Thanh lý" as S5
+  rectangle "Báo cáo thống kê" as S6
+  rectangle "Quản lý người dùng\nThêm/Phân quyền/Khóa" as S7
+  rectangle "Quản lý phòng ban\nThêm/Sửa cơ cấu tổ chức" as S8
+  rectangle "Xem nhật ký hoạt động\nAudit log" as S9
+  rectangle "Cấu hình hệ thống\nTham số/Cảnh báo/Bảo mật" as S10
+}
+
+' Flows
+G1 --> G2
+G2 --> G3
+
+U1 --> U2
+U2 --> U3
+U3 --> U4
+U4 --> U5
+U5 --> U6
+
+A1 --> A2
+A2 --> A3
+A3 --> A4
+A4 --> A5
+A5 --> A6
+A6 --> A7
+A7 --> A8
+
+S1 --> S2
+S2 --> S3
+S3 --> S4
+S4 --> S5
+S5 --> S6
+S6 --> S7
+S7 --> S8
+S8 --> S9
+S9 --> S10
+
+@enduml

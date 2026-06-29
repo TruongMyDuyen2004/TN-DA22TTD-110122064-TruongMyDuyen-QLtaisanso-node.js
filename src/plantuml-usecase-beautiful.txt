@@ -1,0 +1,93 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam packageBorderColor #546E7A
+skinparam packageBackgroundColor #FAFAFA
+skinparam packageFontStyle bold
+skinparam packageFontSize 13
+skinparam packagePadding 20
+skinparam packageMargin 10
+skinparam actor {
+  BorderColor #1565C0
+  FontColor #1565C0
+  FontSize 13
+  FontStyle bold
+}
+skinparam usecase {
+  BorderColor #37474F
+  BackgroundColor #E8F0FE
+  FontSize 11
+}
+skinparam arrow {
+  Color #607D8B
+  Thickness 1.5
+}
+
+left to right direction
+title Thiết kế và xây dựng hệ thống\nquản lý tài sản số cho Đại học Trà Vinh
+
+actor "Super\nAdmin" as SA
+actor "Admin" as AD
+actor "User" as US
+actor "Khách" as KH
+
+package "Xác thực" {
+  (Đăng nhập) as UC1
+}
+
+package "Quản lý thiết bị" {
+  (Xem danh sách\nt.bị) as UC2
+  (Xem chi tiết\nt.bị) as UC3
+  (Thêm / Sửa / Xóa\nt.bị) as UC4
+}
+
+package "Nghiệp vụ" {
+  (Bảo trì) as UC5
+  (Điều\nchuyển) as UC6
+  (Thanh lý) as UC7
+  (Báo hỏng) as UC8
+}
+
+package "Báo cáo &\nHệ thống" {
+  (Báo cáo\nthống kê) as UC9
+  (Quản lý\nngười dùng) as UC10
+}
+
+package "Tra cứu" {
+  (Tra cứu\nqua QR) as UC11
+}
+
+UC5 .> UC3 : <<include>>
+UC6 .> UC3 : <<include>>
+UC7 .> UC3 : <<include>>
+UC8 .> UC2 : <<include>>
+UC9 .> UC2 : <<include>>
+
+SA --> UC1
+SA --> UC2
+SA --> UC3
+SA --> UC4
+SA --> UC5
+SA --> UC6
+SA --> UC7
+SA --> UC9
+SA --> UC10
+
+AD --> UC1
+AD --> UC2
+AD --> UC3
+AD --> UC4
+AD --> UC5
+AD --> UC6
+AD --> UC7
+AD --> UC8
+AD --> UC9
+
+US --> UC1
+US --> UC2
+US --> UC3
+US --> UC8
+
+KH --> UC11
+@enduml

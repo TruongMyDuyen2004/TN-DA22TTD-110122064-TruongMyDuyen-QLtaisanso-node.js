@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment files
+.env
+*.env
+**/.env
+**/backend/.env
+
+# IDE / System files
+.vscode/
+**/.vscode/
+.cursor/
+**/.cursor/
+.kilo/
+**/.kilo/
+.idea/
+**/.idea/
+.DS_Store
+Thumbs.db
+
+# Log and temp files
+*.log
+**/*.log
+*.err
+**/*.err
+server_out.txt
+server_err.txt
+**/server_out.txt
+**/server_err.txt
+
+# Temp / build directories
+dist/
+**/dist/
+build/
+**/build/
+scratch/
+**/scratch/
+uploads/
+**/uploads/

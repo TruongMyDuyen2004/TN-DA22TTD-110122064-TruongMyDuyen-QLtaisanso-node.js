@@ -1,0 +1,37 @@
+@startuml
+actor "Super Admin" as SA
+actor "Admin" as AD
+actor "User" as US
+actor "Khách" as KH
+
+usecase "Đăng nhập" as UC1
+usecase "Quản lý thiết bị" as UC2
+usecase "Quản lý bảo trì" as UC3
+usecase "Điều chuyển" as UC4
+usecase "Thanh lý" as UC5
+usecase "Báo hỏng" as UC6
+usecase "Báo cáo thống kê" as UC7
+usecase "Quản lý người dùng" as UC8
+usecase "Tra cứu qua QR" as UC9
+
+SA --> UC1
+SA --> UC2
+SA --> UC3
+SA --> UC4
+SA --> UC5
+SA --> UC7
+SA --> UC8
+
+AD --> UC1
+AD --> UC2
+AD --> UC3
+AD --> UC4
+AD --> UC5
+AD --> UC6
+AD --> UC7
+
+US --> UC1
+US --> UC6
+
+KH --> UC9
+@enduml

@@ -1,0 +1,102 @@
+@startuml TVU-ITAM-Sequence-Login-Dashboard
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam responseMessageBelowArrow true
+
+title TVU-ITAM - Sequence: Login + Load Dashboard\nLuồng xác thực và tải dữ liệu tổng quan
+
+actor "User" as U
+participant "Browser\n(index.html)" as Browser
+participant "app.js\n(Router)" as Router
+participant "api.js\n(Axios)" as APIClient
+participant "Express\n(server.js)" as Express
+participant "auth.js\n(Middleware)" as Auth
+participant "authController.js" as AuthCtrl
+participant "database\n(tvu_itam)" as DB
+participant "dashboard.js\n(Frontend)" as Dashboard
+
+U -> Browser : Mở http://localhost:5000
+Browser -> Router : Khởi tạo SPA
+Router -> Router : Kiểm tra localStorage\n{có token?}
+
+alt Có token cũ
+    Router -> APIClient : GET /api/auth/check\n(Authorization: Bearer <token>)
+    APIClient -> Express : HTTP GET /api/auth/check
+    Express -> Auth : authenticate()
+    Auth -> DB : SELECT users WHERE id = ?
+    DB --> Auth : {user, role, is_active}
+    Auth --> Express : req.user
+    Express -> AuthCtrl : check(req, res)
+    
+    alt Token hợp lệ
+        AuthCtrl --> Express : {success: true, user: {...}}
+        Express --> APIClient : 200 OK
+        APIClient --> Router : {success: true}
+        Router -> Router : currentUser = user\nnavigate to /dashboard
+    else Token hết hạn / sai
+        AuthCtrl --> Express : 401 Unauthorized
+        Express --> APIClient : 401
+        APIClient --> Router : {success: false}
+        Router -> Router : Xóa token\nnavigate to /login
+        Router -> Browser : Hiển thị Login Page
+        U -> Browser : Nhập username & password
+        Browser -> APIClient : POST /api/auth/login\n{username, password}
+        APIClient -> Express : HTTP POST /api/auth/login
+        Express -> AuthCtrl : login(req, res)
+        AuthCtrl -> DB : SELECT users WHERE username = ?
+        DB --> AuthCtrl : user row
+        AuthCtrl -> AuthCtrl : So sánh password_hash\n(bcrypt.compare)
+        
+        alt Đăng nhập thành công
+            AuthCtrl -> DB : INSERT INTO login_history\n(success=1)
+            AuthCtrl -> AuthCtrl : Tạo JWT\n(24h expiration)
+            AuthCtrl --> Express : {success: true,\ntoken, user}
+            Express --> APIClient : 200 OK
+            APIClient --> Browser : Lưu token\nlocalStorage
+            APIClient --> Router : navigate('/dashboard')
+        else Sai thông tin
+            AuthCtrl -> DB : INSERT INTO login_history\n(success=0)
+            AuthCtrl --> Express : 401 Invalid credentials
+            Express --> APIClient : 401
+            APIClient --> Browser : Toast.error()
+        end
+    end
+end
+
+' Dashboard flow
+Router -> Dashboard : render()
+Dashboard -> APIClient : GET /api/devices?limit=5\nGET /api/maintenance?limit=5\nGET /api/notifications\nGET /api/logs/login-history?limit=5
+APIClient -> Express : HTTP GET (parallel)
+
+Express -> Auth : authenticate() trên mỗi request
+Auth --> Express : req.user = logged_in_user
+
+Express -> DB : SELECT devices WHERE status='active' LIMIT 5
+Express -> DB : SELECT maintenance WHERE status='cho_xu_ly' LIMIT 5
+Express -> DB : SELECT COUNT(*) FROM maintenance_schedules\nWHERE status IN ('cho_xu_ly','da_duyet')\n  AND request_date < CURDATE()
+Express -> DB : SELECT COUNT(*) FROM incident_reports\nWHERE status='open'
+Express -> DB : SELECT ... FROM login_history LIMIT 5
+
+DB --> Express : Kết quả truy vấn
+Express --> Dashboard : 200 OK + JSON data
+
+Dashboard -> Dashboard : Render stats cards\nRender charts (Chart.js)\nRender recent devices\nRender maintenance alerts\nRender activity log
+
+note right of Dashboard
+  Dashboard hiển thị:
+  - Tổng số thiết bị (từ v_dashboard_stats)
+  - Thiết bị đang bảo trì
+  - Thiết bị hỏng
+  - Bảo trì quá hạn
+  - Sự có đang mở
+  - Bảo trì sắp tới (7 ngày)
+  - Thiết bị bảo hành sắp hết
+  - Top thiết bị gần đây
+  - Biểu đồ phân loại (Chart.js)
+end note
+
+U -> Browser : Xem Dashboard
+
+@enduml

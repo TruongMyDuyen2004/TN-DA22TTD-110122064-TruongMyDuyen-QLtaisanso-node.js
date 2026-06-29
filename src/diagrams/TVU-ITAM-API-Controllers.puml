@@ -1,0 +1,184 @@
+@startuml TVU-ITAM-API-Controllers
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+
+title TVU-ITAM - Cấu trúc API Routes & Controllers\nExpress.js + JWT Authentication + RBAC
+
+package "Middleware Stack" as MW {
+    [Helmet\n(Security Headers)] as m_helmet
+    [CORS\n(Cross-Origin)] as m_cors
+    [Morgan\n(HTTP Logger)] as m_morgan
+    [express.json\n(Body Parser)] as m_body
+    [authenticate\n(JWT Verify)] as m_auth
+    [requireRole\n(RBAC Guard)] as m_role
+}
+
+package "Public Routes\n(No Auth Required)" as Public {
+    [GET /api/public/:deviceId] as p1
+}
+
+package "Protected API Routes" as Protected {
+    
+    package "Authentication" as AuthG {
+        [POST /api/auth/superadmin-login] as auth1
+        [POST /api/auth/login] as auth2
+        [POST /api/auth/register] as auth3
+        [POST /api/auth/reset-password] as auth4
+        [POST /api/auth/confirm-reset] as auth5
+        [GET /api/auth/check] as auth6
+    }
+    
+    package "Devices\n(4 Controllers)" as DevG {
+        [GET /api/devices] as dev1
+        [GET /api/devices/:id] as dev2
+        [POST /api/devices] as dev3
+        [PUT /api/devices/:id] as dev4
+        [DELETE /api/devices/:id] as dev5
+        [GET /api/devices/search] as dev6
+        [GET /api/devices/stats] as dev7
+        [POST /api/devices/import-excel] as dev8
+        [GET /api/devices/export-excel] as dev9
+        [GET /api/devices/:id/qrcode] as dev10
+        [GET /api/devices/:id/pdf] as dev11
+    }
+    
+    package "Maintenance\n(4 Controllers)" as MaintG {
+        [GET /api/maintenance] as m1
+        [POST /api/maintenance] as m2
+        [PUT /api/maintenance/:id] as m3
+        [DELETE /api/maintenance/:id] as m4
+        [POST /api/maintenance/:id/approve] as m5
+        [GET /api/maintenance/export] as m6
+        [GET /api/maintenance/stats] as m7
+    }
+    
+    package "Users & Roles\n(4 Roles: superadmin/admin/user/guest)]" as UserG {
+        [GET /api/users] as u1
+        [POST /api/users] as u2
+        [PUT /api/users/:id] as u3
+        [DELETE /api/users/:id] as u4
+        [GET /api/users/roles] as u5
+    }
+    
+    package "Departments" as DeptG {
+        [GET /api/users/departments] as d1
+        [POST /api/users/departments] as d2
+        [PUT /api/users/departments/:id] as d3
+        [DELETE /api/users/departments/:id] as d4
+    }
+    
+    package "Categories\n(Device Types + Useful Life)]" as CatG {
+        [GET /api/devices/categories] as c1
+        [POST /api/devices/categories] as c2
+        [PUT /api/devices/categories/:id] as c3
+        [DELETE /api/devices/categories/:id] as c4
+    }
+    
+    package "Asset Transfers" as TransG {
+        [GET /api/transfers] as t1
+        [POST /api/transfers] as t2
+        [PUT /api/transfers/:id] as t3
+        [PUT /api/transfers/:id/approve] as t4
+    }
+    
+    package "Disposals\n(6-Step Process)]" as DispG {
+        [GET /api/disposals] as dp1
+        [POST /api/disposals] as dp2
+        [PUT /api/disposals/:id] as dp3
+        [PUT /api/disposals/:id/approve] as dp4
+        [GET /api/disposals/report] as dp5
+    }
+    
+    package "Incident Reports\n(4 Status)]" as IncG {
+        [GET /api/incidents] as i1
+        [POST /api/incidents] as i2
+        [PUT /api/incidents/:id] as i3
+        [PUT /api/incidents/:id/assign] as i4
+    }
+    
+    package "Notifications\n(SSE + Polling)]" as NotifG {
+        [GET /api/notifications] as n1
+        [GET /api/notifications/stream] as n2
+        [PUT /api/notifications/:id/read] as n3
+        [DELETE /api/notifications/:id] as n4
+    }
+    
+    package "Audit & Logs\n(Login History + System Logs)]" as LogG {
+        [GET /api/logs] as l1
+        [GET /api/logs/login-history] as l2
+        [GET /api/logs/export] as l3
+    }
+    
+    package "Settings\n(12+ Config Keys)]" as SetG {
+        [GET /api/settings] as s1
+        [PUT /api/settings] as s2
+        [GET /api/settings/:key] as s3
+    }
+    
+    package "Depreciation\n(ExcelJS + PDFKit)]" as DeprG {
+        [GET /api/depreciation] as de1
+        [GET /api/depreciation/:id] as de2
+        [GET /api/depreciation/export] as de3
+    }
+    
+    package "Inventory\n(Kiểm kê định kỳ)]" as InvG {
+        [GET /api/inventory] as inv1
+        [POST /api/inventory] as inv2
+        [PUT /api/inventory/:id] as inv3
+        [PUT /api/inventory/:id/check] as inv4
+        [GET /api/inventory/:id/export] as inv5
+    }
+    
+    package "Warehouse\n(Nhập/Xuất/Tồn)]" as WHG {
+        [GET /api/warehouses] as w1
+        [POST /api/warehouses] as w2
+        [PUT /api/warehouses/:id] as w3
+        [POST /api/warehouses/receipts] as w4
+        [POST /api/warehouses/issues] as w5
+    }
+    
+    package "Misc\n(Health Check)]" as MiscG {
+        [GET /api/health] as msc1
+        [GET /__path\n(Phone Debug)] as msc2
+    }
+}
+
+' Flow
+MW --> Public : skip auth
+Public --> p1 : route
+MW --> Protected : require auth
+Protected --> AuthG : route
+Protected --> DevG : route
+Protected --> MaintG : route
+Protected --> UserG : route + role guard
+Protected --> DeptG : route + role guard
+Protected --> CatG : route + role guard
+Protected --> TransG : route
+Protected --> DispG : route
+Protected --> IncG : route
+Protected --> NotifG : route
+Protected --> LogG : route + role guard
+Protected --> SetG : route + role guard
+Protected --> DeprG : route
+Protected --> InvG : route + role guard
+Protected --> WHG : route
+Protected --> MiscG : route
+
+m_morgan --> m_auth : log request
+
+note bottom of m_auth
+  Verifies JWT token
+  (24 hours expiration)
+  Sets req.user
+end note
+
+note bottom of m_role
+  Restricts to roles:
+  - superadmin (full access)
+  - admin (department scope)
+  - user (read-only + incidents)
+end note
+
+@enduml

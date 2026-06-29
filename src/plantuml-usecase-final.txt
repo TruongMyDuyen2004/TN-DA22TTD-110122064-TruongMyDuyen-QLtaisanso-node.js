@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam actor {
+  BorderColor #1565C0
+  FontColor #1565C0
+  FontSize 15
+  FontStyle bold
+}
+skinparam usecase {
+  BorderColor #37474F
+  BackgroundColor #E3F2FD
+  FontSize 12
+}
+skinparam package {
+  BorderColor #546E7A
+  BackgroundColor #FAFAFA
+  FontStyle bold
+  FontSize 14
+}
+skinparam arrow {
+  Color #546E7A
+  Thickness 1.5
+}
+
+left to right direction
+title HỆ THỐNG QUẢN LÝ TÀI SẢN SỐ\nĐẠI HỌC TRÀ VINH
+
+actor "Super Admin" as SA
+actor "Admin" as AD
+actor "Người dùng\n(User)" as US
+actor "Khách" as KH
+
+rectangle "Phân hệ chức năng" {
+  (Đăng nhập) as UC1
+  (Xem thiết bị) as UC2
+  (Quản lý thiết bị\nThêm / Sửa / Xóa) as UC3
+  (Bảo trì & Sửa chữa) as UC4
+  (Điều chuyển\n& Thanh lý) as UC5
+  (Báo cáo\nthống kê) as UC6
+  (Quản lý\nngười dùng) as UC7
+  (Tra cứu\nqua QR) as UC8
+}
+
+SA --> UC1
+SA --> UC2
+SA --> UC3
+SA --> UC4
+SA --> UC5
+SA --> UC6
+SA --> UC7
+
+AD --> UC1
+AD --> UC2
+AD --> UC3
+AD --> UC4
+AD --> UC5
+AD --> UC6
+
+US --> UC1
+US --> UC2
+US --> UC4
+
+KH --> UC8
+@enduml

@@ -1,0 +1,402 @@
+@startuml TVU-ITAM-Class-Diagram
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam classAttributeIconSize 0
+
+title TVU-ITAM - Sơ đồ Lớp (Class Diagram)\nCác lớp chính trong hệ thống
+
+package "Controllers\n(Xử lý request/response)" as CtrlLayer {
+    class AuthController {
+        +login(req, res)
+        +register(req, res)
+        +resetPassword(req, res)
+        +check(req, res)
+        -generateToken(user)
+        -hashPassword(password)
+    }
+    
+    class DeviceController {
+        +getAll(req, res)
+        +getById(req, res)
+        +create(req, res)
+        +update(req, res)
+        +delete(req, res)
+        +search(req, res)
+        +getStats(req, res)
+        +importExcel(req, res)
+        +exportExcel(req, res)
+        +generateQR(req, res)
+        +generatePDF(req, res)
+        -validateDevice(data)
+        -buildDeviceQuery(filters)
+    }
+    
+    class MaintenanceController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +delete(req, res)
+        +approve(req, res)
+        +export(req, res)
+        +getStats(req, res)
+        -validateSchedule(data)
+        -checkDeviceAvailability(deviceId)
+    }
+    
+    class UserController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +delete(req, res)
+        +getRoles(req, res)
+        -validateUser(data)
+        -hashPassword(password)
+    }
+    
+    class IncidentController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +assign(req, res)
+        -validateIncident(data)
+        -notifyAssignee(incidentId)
+    }
+    
+    class TransferController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +approve(req, res)
+        -validateTransfer(data)
+        -checkDeviceStatus(deviceId)
+    }
+    
+    class DisposalController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +approve(req, res)
+        +generateReport(req, res)
+        -validateDisposal(data)
+        -calculateDepreciation(deviceId)
+    }
+    
+    class InventoryController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +checkDevice(req, res)
+        +export(req, res)
+        -validateSession(data)
+        -reconcileResults(sessionId)
+    }
+    
+    class WarehouseController {
+        +getAll(req, res)
+        +createReceipt(req, res)
+        +createIssue(req, res)
+        +getStock(req, res)
+        -validateReceipt(data)
+        -validateIssue(data)
+        -updateInventoryCounts(warehouseId)
+    }
+    
+    class NotificationController {
+        +getAll(req, res)
+        +markAsRead(req, res)
+        +delete(req, res)
+        +stream(req, res)
+        -broadcastToUser(userId, data)
+    }
+    
+    class LogController {
+        +getAll(req, res)
+        +getLoginHistory(req, res)
+        +export(req, res)
+        -logAction(userId, action, entity)
+    }
+    
+    class SettingsController {
+        +getAll(req, res)
+        +update(req, res)
+        +getByKey(req, res)
+        -validateSettings(data)
+    }
+    
+    class DepreciationController {
+        +getAll(req, res)
+        +getById(req, res)
+        +exportExcel(req, res)
+        +exportPDF(req, res)
+        -calculateDepreciation(deviceId)
+        -formatReport(devices)
+    }
+    
+    class PublicController {
+        +renderDevicePage(req, res)
+        +lookupByQR(req, res)
+        -getDeviceDetails(deviceCode)
+    }
+    
+    class DepartmentController {
+        +getAll(req, res)
+        +create(req, res)
+        +update(req, res)
+        +delete(req, res)
+        -validateDepartment(data)
+    }
+}
+
+package "Middleware\n(Xác thực & Bảo mật)" as MiddlewareLayer {
+    class AuthMiddleware {
+        +authenticate(req, res, next)
+        +requireRole(...roles)
+        -verifyToken(token)
+        -getUserFromToken(decoded)
+    }
+    
+    class SecurityMiddleware {
+        +helmet(req, res, next)
+        +cors(req, res, next)
+        +morgan(req, res, next)
+        +sanitizeInput(req, res, next)
+    }
+}
+
+package "Models/Repositories\n(Truy cập CSDL)" as DataLayer {
+    class DatabasePool {
+        +query(sql, params)
+        +getConnection()
+        +releaseConnection()
+        -pool config
+    }
+    
+    class DeviceRepository {
+        +findAll(filters, pagination)
+        +findById(id)
+        +findByCode(code)
+        +create(data)
+        +update(id, data)
+        +delete(id)
+        +search(keyword)
+        +getStats()
+    }
+    
+    class UserRepository {
+        +findByEmail(email)
+        +findByUsername(username)
+        +findById(id)
+        +create(data)
+        +update(id, data)
+        +delete(id)
+        +updateLastLogin(id)
+    }
+    
+    class MaintenanceRepository {
+        +findAll(filters)
+        +findById(id)
+        +create(data)
+        +update(id, data)
+        +delete(id)
+        +findByDeviceId(deviceId)
+        +getUpcomingMaintenance()
+    }
+    
+    class IncidentRepository {
+        +findAll(filters)
+        +findById(id)
+        +create(data)
+        +update(id, data)
+        +assign(id, userId)
+        +findByDeviceId(deviceId)
+    }
+    
+    class DisposalRepository {
+        +findAll(filters)
+        +findById(id)
+        +create(data)
+        +update(id, data)
+        +approve(id, userId)
+        +getReportData(filters)
+    }
+}
+
+package "Services\n(Tác vụ phụ trợ)" as ServiceLayer {
+    class QRService {
+        +generateQR(text, size)
+        +saveQRImage(qrData, filename)
+        +getQRPath(deviceId)
+    }
+    
+    class PDFService {
+        +generateDeviceReport(devices)
+        +generateMaintenanceReport(data)
+        +generateDisposalReport(data)
+        +generateDepreciationReport(data)
+        -generatePDF(docDef)
+        -savePDF(pdfBuffer, filename)
+    }
+    
+    class ExcelService {
+        +exportDevices(devices)
+        +exportMaintenance(data)
+        +exportDisposals(data)
+        +exportDepreciation(data)
+        +exportInventory(data)
+        -generateExcel(data, sheetName)
+        -saveExcel(buffer, filename)
+    }
+    
+    class EmailService {
+        +sendResetPassword(email, token)
+        +sendMaintenanceReminder(recipients, schedules)
+        +sendDisposalApproval(recipients, disposal)
+        +sendIncidentNotification(recipients, incident)
+        -createMailTemplate(template, data)
+        -transporter.sendMail(mailOptions)
+    }
+    
+    class MaintenanceReminderService {
+        +checkOverdueMaintenance()
+        +checkUpcomingMaintenance()
+        +sendReminders()
+        -cronJob
+        -pollInterval
+    }
+    
+    class DepreciationService {
+        +calculate(device)
+        +calculateById(deviceId)
+        +calculateBatch(devices)
+        -getDepreciationRate(categoryId)
+        -formatCurrency(amount)
+    }
+}
+
+package "DTOs/Requests\n(Dữ liệu đầu vào)" as DTOs {
+    class LoginRequest {
+        +username: string
+        +password: string
+    }
+    
+    class DeviceRequest {
+        +device_code: string
+        +name: string
+        +category_id: int
+        +brand: string
+        +model: string
+        +serial_number: string
+        +specs: JSON
+        +purchase_date: date
+        +purchase_price: decimal
+        +warranty_expiry: date
+        +status: enum
+        +department_id: int
+        +location: string
+    }
+    
+    class MaintenanceRequest {
+        +maintenance_code: string
+        +device_id: int
+        +request_date: date
+        +maintenance_type: enum
+        +description: text
+        +priority: enum
+        +technician_id: int
+    }
+    
+    class IncidentRequest {
+        +device_id: int
+        +issue: string
+        +description: text
+        +severity: enum
+    }
+    
+    class DisposalRequest {
+        +disposal_code: string
+        +device_id: int
+        +proposal_date: date
+        +disposal_method: enum
+        +reason: text
+        +asset_condition: string
+        +current_value: decimal
+    }
+}
+
+package "Utils/Helpers"\n as Utils {
+    class JWTUtils {
+        +generate(payload, expiresIn)
+        +verify(token, secret)
+        +decode(token)
+    }
+    
+    class PasswordUtils {
+        +hash(password)
+        +compare(password, hash)
+    }
+    
+    class ValidationUtils {
+        +validateEmail(email)
+        +validatePhone(phone)
+        +validateDeviceCode(code)
+        +validateDate(date)
+        +sanitize(input)
+    }
+    
+    class FileUtils {
+        +uploadFile(file, folder)
+        +deleteFile(path)
+        +generateFilename(prefix, ext)
+    }
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' Controller uses Middleware
+AuthMiddleware ..> AuthController : protects
+AuthMiddleware ..> DeviceController : protects
+AuthMiddleware ..> MaintenanceController : protects
+
+' Controller uses Repository/Data
+DeviceController ..> DeviceRepository : uses
+UserController ..> UserRepository : uses
+MaintenanceController ..> MaintenanceRepository : uses
+IncidentController ..> IncidentRepository : uses
+TransferController ..> MaintenanceRepository : uses
+DisposalController ..> DisposalRepository : uses
+
+' Controller uses Service
+DeviceController ..> QRService : uses
+DeviceController ..> PDFService : uses
+DeviceController ..> ExcelService : uses
+MaintenanceController ..> EmailService : uses
+DisposalController ..> PDFService : uses
+DepreciationController ..> PDFService : uses
+DepreciationController ..> ExcelService : uses
+DepreciationController ..> DepreciationService : uses
+NotificationController ..> EmailService : uses
+
+' Repository uses DatabasePool
+DeviceRepository ..> DatabasePool : uses
+UserRepository ..> DatabasePool : uses
+MaintenanceRepository ..> DatabasePool : uses
+
+' Service uses Utils
+EmailService ..> JWTUtils : uses
+AuthController ..> JWTUtils : uses
+AuthController ..> PasswordUtils : uses
+DeviceController ..> ValidationUtils : uses
+DeviceController ..> FileUtils : uses
+
+' Controller uses DTOs
+AuthController ..> LoginRequest : validates
+DeviceController ..> DeviceRequest : validates
+MaintenanceController ..> MaintenanceRequest : validates
+IncidentController ..> IncidentRequest : validates
+DisposalController ..> DisposalRequest : validates
+
+@enduml

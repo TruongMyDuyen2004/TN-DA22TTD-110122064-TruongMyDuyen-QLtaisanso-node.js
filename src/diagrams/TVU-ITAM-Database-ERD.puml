@@ -1,0 +1,275 @@
+@startuml TVU-ITAM-Database-ERD
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+
+title TVU-ITAM - Sơ đồ Cơ sở dữ liệu\nMySQL 5.7+ - 18 bảng + 3 Views
+
+package "tvu_itam" as DB {
+    
+    class users {
+        +id INT <<PK>>
+        full_name VARCHAR(200)
+        email VARCHAR(150) <<UQ>>
+        username VARCHAR(100) <<UQ>>
+        password_hash VARCHAR(255)
+        role ENUM('superadmin','admin','user')
+        department_id INT <<FK>>
+        phone VARCHAR(20)
+        is_active TINYINT(1)
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class departments {
+        +id INT <<PK>>
+        name VARCHAR(200)
+        code VARCHAR(20) <<UQ>>
+        location VARCHAR(200)
+        description TEXT
+        manager_id INT <<FK>>
+        is_active TINYINT(1)
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class device_categories {
+        +id INT <<PK>>
+        name VARCHAR(100)
+        description TEXT
+        icon VARCHAR(50)
+        useful_life_years INT
+        created_at TIMESTAMP
+    }
+    
+    class devices {
+        +id INT <<PK>>
+        device_code VARCHAR(50) <<UQ>>
+        name VARCHAR(200)
+        category_id INT <<FK>>
+        brand VARCHAR(100)
+        model VARCHAR(150)
+        serial_number VARCHAR(100)
+        specs JSON
+        purchase_date DATE
+        purchase_price DECIMAL(15,2)
+        depreciation_rate DECIMAL(5,2)
+        warranty_expiry DATE
+        status ENUM('active','maintenance','broken','disposed','inactive')
+        department_id INT <<FK>>
+        assigned_user_id INT <<FK>>
+        location VARCHAR(200)
+        image_url VARCHAR(255)
+        notes TEXT
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class maintenance_schedules {
+        +id INT <<PK>>
+        maintenance_code VARCHAR(20) <<UQ>>
+        device_id INT <<FK>>
+        request_date DATE
+        start_date DATE
+        actual_date DATE
+        maintenance_type ENUM('dinh_ky','dot_xuat')
+        description TEXT
+        result ENUM('da_sua','khong_sua_duoc')
+        cost DECIMAL(15,2)
+        status ENUM('cho_xu_ly','da_duyet','dang_thuc_hien','hoan_thanh','huy')
+        priority ENUM('low','medium','high','critical')
+        technician_id INT <<FK>>
+        approver_id INT <<FK>>
+        notes TEXT
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class maintenance_logs {
+        +id INT <<PK>>
+        schedule_id INT <<FK>>
+        device_id INT <<FK>>
+        action VARCHAR(200)
+        description TEXT
+        performed_by INT <<FK>>
+        performed_at TIMESTAMP
+        before_status VARCHAR(50)
+        after_status VARCHAR(50)
+        cost DECIMAL(15,2)
+    }
+    
+    class incident_reports {
+        +id INT <<PK>>
+        device_id INT <<FK>>
+        reported_by INT <<FK>>
+        reported_at TIMESTAMP
+        issue VARCHAR(500)
+        description TEXT
+        severity ENUM('low','medium','high','critical')
+        status ENUM('open','in_progress','resolved','closed')
+        assigned_to INT <<FK>>
+        resolved_at TIMESTAMP
+        resolution TEXT
+        updated_at TIMESTAMP
+    }
+    
+    class asset_transfers {
+        +id INT <<PK>>
+        device_id INT <<FK>>
+        from_department_id INT <<FK>>
+        to_department_id INT <<FK>>
+        from_user_id INT <<FK>>
+        to_user_id INT <<FK>>
+        transfer_date DATE
+        approved_by INT <<FK>>
+        reason TEXT
+        notes TEXT
+        status ENUM('pending','approved','rejected')
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+    }
+    
+    class disposals {
+        +id INT <<PK>>
+        disposal_code VARCHAR(20) <<UQ>>
+        device_id INT <<FK>>
+        proposal_date DATE
+        inspection_date DATE
+        decision_number VARCHAR(50)
+        decision_date DATE
+        disposal_date DATE
+        reason TEXT
+        asset_condition VARCHAR(200)
+        current_value DECIMAL(15,2)
+        disposal_method ENUM('ban_thanh_ly','tieu_huy','dieu_chuyen_noi_bo','mat_tai_san','hu_hong_khong_sd_duoc')
+        recovery_value DECIMAL(15,2)
+        council VARCHAR(255)
+        status ENUM('de_nghi','dang_kiem_tra','cho_phe_duyet','da_duyet','da_thanh_ly','tu_choi')
+        approved_by INT <<FK>>
+        handover_unit VARCHAR(200)
+        notes TEXT
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class audit_logs {
+        +id INT <<PK>>
+        user_id INT <<FK>>
+        action VARCHAR(100)
+        entity_type VARCHAR(50)
+        entity_id INT
+        old_data JSON
+        new_data JSON
+        ip_address VARCHAR(45)
+        user_agent TEXT
+        created_at TIMESTAMP
+    }
+    
+    class system_settings {
+        +key VARCHAR(100) <<PK>>
+        value TEXT
+        description TEXT
+        updated_at TIMESTAMP
+    }
+    
+    class login_history {
+        +id INT <<PK>>
+        user_id INT <<FK>>
+        username VARCHAR(150)
+        success TINYINT(1)
+        ip_address VARCHAR(45)
+        user_agent TEXT
+        message VARCHAR(255)
+        created_at TIMESTAMP
+    }
+    
+    class warehouses {
+        +id INT <<PK>>
+        warehouse_code VARCHAR(20)
+        name VARCHAR(255)
+        address TEXT
+        manager_name VARCHAR(255)
+        notes TEXT
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class inventory_sessions {
+        +id INT <<PK>>
+        inventory_code VARCHAR(20)
+        title VARCHAR(255)
+        inventory_date DATE
+        department_id INT <<FK>>
+        quarter TINYINT
+        year SMALLINT
+        notes TEXT
+        status ENUM('draft','in_progress','completed','cancelled')
+        total_devices INT
+        checked_devices INT
+        found_devices INT
+        missing_devices INT
+        damaged_devices INT
+        transferred_devices INT
+        created_by INT <<FK>>
+        created_at TIMESTAMP
+        updated_at TIMESTAMP
+    }
+    
+    class inventory_details {
+        +id INT <<PK>>
+        session_id INT <<FK>>
+        device_id INT <<FK>>
+        system_status VARCHAR(50)
+        actual_status ENUM('found','missing','damaged','transferred')
+        system_location VARCHAR(200)
+        actual_location VARCHAR(200)
+        notes TEXT
+        checked_by INT <<FK>>
+        checked_at TIMESTAMP
+    }
+    
+    class password_resets {
+        +id INT <<PK>>
+        user_id INT <<FK>>
+        email VARCHAR(255)
+        token VARCHAR(255) <<UQ>>
+        expires_at DATETIME
+        used TINYINT(1)
+        created_at TIMESTAMP
+    }
+}
+
+' Relationships
+users ||..o{ departments : "manages (manager_id)"
+users ||--o{ devices : "created_by"
+users ||--o{ maintenance_schedules : "created_by"
+users ||--o{ asset_transfers : "created_by"
+users ||--o{ disposals : "created_by"
+users ||--o{ incident_reports : "reported_by"
+users ||--o{ audit_logs : "user_id"
+users ||--o{ login_history : "user_id"
+users ||--o{ warehouses : "created_by"
+
+departments ||--o{ users : "department_id"
+departments ||--o{ devices : "department_id"
+departments ||--o{ asset_transfers : "from/to_department"
+departments ||--o{ inventory_sessions : "department_id"
+
+device_categories ||--o{ devices : "category_id"
+devices ||--o{ maintenance_schedules : "device_id"
+devices ||--o{ incident_reports : "device_id"
+devices ||--o{ asset_transfers : "device_id"
+devices ||--o{ disposals : "device_id"
+devices ||--o{ inventory_details : "device_id"
+
+maintenance_schedules ||--o{ maintenance_logs : "schedule_id"
+warehouses ||--o{ inventory_sessions : "warehouse_id"
+inventory_sessions ||--o{ inventory_details : "session_id"
+
+@enduml

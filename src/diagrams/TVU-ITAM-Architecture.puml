@@ -1,0 +1,147 @@
+@startuml TVU-ITAM-Complete-System
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+title Hệ thống Quản lý Tài sản CNTT - Đại học Trà Vinh\nKiến trúc 3 tầng Full Stack
+
+' ============================================================
+' LAYER 1: CLIENT / PRESENTATION
+' ============================================================
+package "🎨 TẦNG TRÌNH DIỄN (Presentation Layer)" as Presentation {
+    [🌐 Trình duyệt Web\n(Chrome, Edge, Firefox)] as Browser
+    
+    package "📱 PWA / Mobile" as PWA {
+        [Service Worker\n(Offline Cache)] as SW
+        [Web App Manifest] as Manifest
+    }
+    
+    package "📄 Giao diện" as UI {
+        [index.html] as idxHTML
+        [app.html] as appHTML
+        [login.html] as loginHTML
+        [public-device.html] as pubHTML
+    }
+    
+    package "🎨 Styles" as CSS {
+        [main.css] as mainCSS
+        [app.css] as appCSS
+        [login.css] as loginCSS
+    }
+    
+    package "⚡ JavaScript" as JS {
+        [api.js] as apiJS
+        [app.js - Router] as appJS
+        [login.js] as loginJS
+        [devices.js] as devJS
+        [dashboard.js] as dashJS
+        [maintenance.js] as maintJS
+        [incidents.js] as incJS
+        [transfers.js] as transJS
+        [disposals.js] as dispJS
+        [users.js] as userJS
+        [inventory.js] as invJS
+        [warehouse.js] as whJS
+        [public-device.js] as pubJS
+    }
+}
+
+' ============================================================
+' LAYER 2: APPLICATION / BACKEND
+' ============================================================
+package "🖥️ TẦNG ỨNG DỤNG\nNode.js + Express" as Application {
+    [Express Server\nPort 5000] as Express
+    
+    package "🔐 Xác thực" as Auth {
+        [JWT\n24h] as JWT
+        [RBAC\n4 roles] as RBAC
+        [authenticate()] as AuthMW
+    }
+    
+    package "📁 Routes" as Routes {
+        [auth] as r_auth
+        [devices] as r_dev
+        [maintenance] as r_maint
+        [users] as r_user
+        [departments] as r_dept
+        [transfers] as r_trans
+        [disposals] as r_disp
+        [incidents] as r_inc
+        [inventory] as r_inv
+        [warehouses] as r_wh
+        [notifications] as r_notif
+        [logs] as r_log
+        [settings] as r_set
+        [depreciation] as r_depr
+        [public] as r_pub
+    }
+    
+    package "🎯 Controllers" as Controllers {
+        [authController] as c_auth
+        [deviceController] as c_dev
+        [maintenanceController] as c_maint
+        [userController] as c_user
+        [transferController] as c_trans
+        [disposalController] as c_disp
+        [incidentController] as c_inc
+        [inventoryController] as c_inv
+        [warehouseController] as c_wh
+        [logController] as c_log
+        [settingsController] as c_set
+        [depreciationController] as c_dep
+        [publicController] as c_pub
+    }
+    
+    package "⚙️ Services" as Services {
+        [QR Generator] as svc_qr
+        [PDF Export] as svc_pdf
+        [Excel Export] as svc_excel
+        [Email\nNodemailer] as svc_email
+        [Cron\n8h sáng] as svc_cron
+    }
+}
+
+' ============================================================
+' LAYER 3: DATA
+' ============================================================
+package "💾 TẦNG DỮ LIỆU\nMySQL" as Data {
+    database "tvu_itam" {
+        [users] as T_users
+        [departments] as T_depts
+        [device_categories] as T_cat
+        [devices] as T_dev
+        [maintenance_schedules] as T_maint
+        [maintenance_logs] as T_maintlog
+        [asset_transfers] as T_trans
+        [disposals] as T_disp
+        [incident_reports] as T_inc
+        [audit_logs] as T_audit
+        [system_settings] as T_set
+        [login_history] as T_login
+        [inventory_sessions] as T_inv_sess
+        [warehouses] as T_wh
+    }
+}
+
+' ============================================================
+' FLOWS
+' ============================================================
+Browser --> Presentation
+Presentation -[#blue]-> Application : HTTPS/API
+Application -[#blue]-> Data : mysql2
+
+Express --> Auth
+Auth --> Routes
+Routes --> Controllers
+Controllers --> Services
+Controllers --> T_users
+Controllers --> T_dev
+Controllers --> T_maint
+Controllers --> T_inc
+Controllers --> T_trans
+Controllers --> T_disp
+
+@enduml

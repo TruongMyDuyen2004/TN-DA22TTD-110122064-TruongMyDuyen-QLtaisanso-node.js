@@ -1,0 +1,119 @@
+@startuml TVU-ITAM-System-Architecture
+!theme plain
+skinparam backgroundColor #FEFEFF
+skinparam handwritten false
+skinparam defaultTextAlignment center
+
+title TVU-ITAM - Kiến trúc hệ thống 3 tầng\nHệ thống Quản lý Tài sản CNTT - Trường Đại học Trà Vinh
+
+package "Client Layer\n(Browser / Mobile)" as Client {
+    [Web UI\n(HTML, CSS, JS)] as WebUI
+    [PWA\n(Service Worker\nManifest)] as PWA
+    [Public QR Page\n(q/:code, /qr/:code)] as PublicPage
+}
+
+package "Server Layer\n(Node.js + Express)" as Server {
+    [Express Server\n(Port 5000)] as Express
+    [Middleware\n(CORS, Helmet, Morgan)] as Middleware
+    [Auth Middleware\n(JWT + RBAC)] as AuthMW
+    [Static Files\n(frontend/, uploads/)] as Static
+    
+    package "API Routes" as Routes {
+        [/api/auth] as r_auth
+        [/api/devices] as r_devices
+        [/api/maintenance] as r_maint
+        [/api/users] as r_users
+        [/api/transfers] as r_transfers
+        [/api/disposals] as r_disposals
+        [/api/notifications] as r_notif
+        [/api/logs] as r_logs
+        [/api/settings] as r_settings
+        [/api/depreciation] as r_depr
+        [/api/inventory] as r_inv
+        [/api/warehouses] as r_wh
+        [/api/public] as r_public
+        [/? (all routes)] as r_catch
+    }
+    
+    package "Controllers" as Controllers {
+        [authController] as c_auth
+        [deviceController] as c_dev
+        [maintenanceController] as c_maint
+        [userController] as c_user
+        [transferController] as c_trans
+        [disposalController] as c_disp
+        [notificationController] as c_notif
+        [logController] as c_log
+        [settingsController] as c_set
+        [departmentController] as c_dept
+        [inventoryController] as c_inv
+        [warehouseController] as c_wh
+        [publicController] as c_pub
+    }
+    
+    package "Services" as Services {
+        [maintenanceReminder\n(cron daily 8AM)] as svc_remind
+        [Excel Export\n(ExcelJS)] as svc_excel
+        [PDF Export\n(PDFKit)] as svc_pdf
+        [QR Generator\n(qrcode lib)] as svc_qr
+        [Email Service\n(Nodemailer)] as svc_email
+    }
+    
+    [SSE Stream\n(/notifications/stream)] as SSE
+}
+
+package "Data Layer\n(MySQL 5.7+)" as Data {
+    database "tvu_itam" {
+        [users] as tbl_users
+        [departments] as tbl_depts
+        [device_categories] as tbl_cats
+        [devices] as tbl_dev
+        [maintenance_schedules] as tbl_maint
+        [maintenance_logs] as tbl_maintlog
+        [asset_transfers] as tbl_trans
+        [disposals] as tbl_disp
+        [incident_reports] as tbl_inc
+        [audit_logs] as tbl_audit
+        [system_settings] as tbl_set
+        [login_history] as tbl_login
+        [password_resets] as tbl_pwdreset
+        [inventory_sessions] as tbl_invsess
+        [inventory_details] as tbl_invdet
+        [warehouses] as tbl_wh
+        [inventory_receipts] as tbl_whrec
+        [inventory_receipt_details] as tbl_whrecdet
+        [inventory_issues] as tbl_whiss
+        [inventory_issue_details] as tbl_whissdet
+    }
+    
+    [Views] as Views {
+        [v_device_details] as vw_dev
+        [v_maintenance_details] as vw_maint
+        [v_dashboard_stats] as vw_dash
+    }
+}
+
+' Client to Server
+WebUI --> Express : HTTPS requests
+PWA --> Express : PWA manifest/sw
+PublicPage --> Express : GET /q/:code
+
+' Server internals
+Express --> Middleware : all requests
+Middleware --> Static : static assets
+Middleware --> AuthMW : API requests
+AuthMW --> Routes : authenticated
+
+Routes --> Controllers : forward
+
+Controllers --> Data : mysql2 queries\n(pool + parameterized)
+Controllers --> Services : call services
+
+Services --> tbl_users : query for email
+Services --> tbl_dev : query for QR data
+SSE --> tbl_maint : poll every 15s
+SSE --> tbl_inc : poll
+SSE --> tbl_trans : poll
+SSE --> tbl_disp : poll
+
+@enduml

@@ -1,0 +1,86 @@
+flowchart TD
+    TITLE["Thiết kế và xây dựng hệ thống<br/>quản lý tài sản số<br/>cho Đại học Trà Vinh"]
+    style TITLE fill:#1e3c72,stroke:#1a3c6e,color:white,font-size:12px,font-weight:bold,padding:10px,border-radius:8px
+
+    subgraph Guest["👤 Khách (Guest)"]
+        direction TB
+        G1["Quét mã QR trên thiết bị"]
+        G2["Tra cứu thông tin<br/>thiết bị công khai"]
+        G3["Xác nhận thông tin<br/>kiểm kê"]
+        G1 --> G2 --> G3
+        style Guest fill:#ffe6e6,stroke:#ff6b6b,stroke-width:2px
+        style G1 fill:#fff,stroke:#ff6b6b,stroke-width:1px
+        style G2 fill:#fff,stroke:#ddd,stroke-width:1px
+        style G3 fill:#fff,stroke:#ddd,stroke-width:1px
+    end
+
+    subgraph User["👤 Người dùng (User)"]
+        direction TB
+        U1["Đăng nhập hệ thống"]
+        U2["Dashboard<br/>Tổng quan"]
+        U3["Xem danh sách thiết bị"]
+        U4["Xem chi tiết thiết bị"]
+        U5["Gửi báo cáo hỏng"]
+        U6["Theo dõi tiến độ xử lý"]
+        U1 --> U2 --> U3 --> U4 --> U5 --> U6
+        style User fill:#e6f7f0,stroke:#26de81,stroke-width:2px
+        style U1 fill:#fff,stroke:#26de81,stroke-width:1px
+        style U2 fill:#e8f5e9,stroke:#26de81,stroke-width:1px,font-weight:bold
+        style U3 fill:#fff,stroke:#ddd,stroke-width:1px
+        style U4 fill:#fff,stroke:#ddd,stroke-width:1px
+        style U5 fill:#fff,stroke:#ddd,stroke-width:1px
+        style U6 fill:#fff,stroke:#ddd,stroke-width:1px
+    end
+
+    subgraph Admin["👤 Quản trị viên (Admin)"]
+        direction TB
+        A1["Đăng nhập quản trị"]
+        A2["Dashboard quản trị"]
+        A3["Quản lý thiết bị<br/>Thêm/Sửa/Xóa/Import/In QR"]
+        A4["Quản lý bảo trì<br/>Lập/Phân công/Ghi nhận"]
+        A5["Quản lý sự cố<br/>Báo cáo/Xử lý/Đóng"]
+        A6["Điều chuyển tài sản<br/>Yêu cầu/Phê duyệt/Cập nhật"]
+        A7["Thanh lý tài sản<br/>Đề xuất/Phê duyệt/Cập nhật"]
+        A8["Báo cáo thống kê<br/>Xem biểu đồ/Xuất Excel/PDF"]
+        A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7 --> A8
+        style Admin fill:#e6f2ff,stroke:#45aaf2,stroke-width:2px
+        style A1 fill:#fff,stroke:#45aaf2,stroke-width:1px
+        style A2 fill:#e3f2fd,stroke:#45aaf2,stroke-width:1px,font-weight:bold
+        style A3 fill:#fff5e6,stroke:#fa8231,stroke-width:1px
+        style A4 fill:#fff,stroke:#ddd,stroke-width:1px
+        style A5 fill:#fff,stroke:#ddd,stroke-width:1px
+        style A6 fill:#fff,stroke:#ddd,stroke-width:1px
+        style A7 fill:#fff,stroke:#ddd,stroke-width:1px
+        style A8 fill:#f3e5f5,stroke:#a55eea,stroke-width:1px
+    end
+
+    subgraph SuperAdmin["👤 Quản trị hệ thống"]
+        direction TB
+        S1["Đăng nhập quản trị hệ thống"]
+        S2["Dashboard hệ thống"]
+        S3["Quản lý thiết bị"]
+        S4["Quản lý bảo trì"]
+        S5["Điều chuyển & Thanh lý"]
+        S6["Báo cáo thống kê"]
+        S7["Quản lý người dùng<br/>Thêm/Phân quyền/Khóa"]
+        S8["Quản lý phòng ban<br/>Thêm/Sửa cơ cấu tổ chức"]
+        S9["Xem nhật ký hoạt động<br/>Audit log"]
+        S10["Cấu hình hệ thống<br/>Tham số/Cảnh báo/Bảo mật"]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10
+        style SuperAdmin fill:#fff0e6,stroke:#fd9644,stroke-width:2px
+        style S1 fill:#fff,stroke:#fd9644,stroke-width:1px
+        style S2 fill:#fff3e0,stroke:#fd9644,stroke-width:1px,font-weight:bold
+        style S3 fill:#fff5e6,stroke:#fa8231,stroke-width:1px
+        style S4 fill:#fff,stroke:#ddd,stroke-width:1px
+        style S5 fill:#fff,stroke:#ddd,stroke-width:1px
+        style S6 fill:#f3e5f5,stroke:#a55eea,stroke-width:1px
+        style S7 fill:#fff,stroke:#ddd,stroke-width:1px
+        style S8 fill:#fff,stroke:#ddd,stroke-width:1px
+        style S9 fill:#fff,stroke:#ddd,stroke-width:1px
+        style S10 fill:#fff,stroke:#ddd,stroke-width:1px
+    end
+
+    TITLE --> Guest
+    TITLE --> User
+    TITLE --> Admin
+    TITLE --> SuperAdmin
